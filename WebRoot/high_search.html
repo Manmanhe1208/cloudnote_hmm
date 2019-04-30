@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>high_search.html</title>
+    <script type="text/javascript" src="scripts/common/jquery.min.js">
+    </script>
+    <script type="text/javascript">
+    	$(function(){
+    		//给搜索按钮绑定单击处理
+    		$("#searchBtn").click(function(){
+    			//获取查询条件
+    			var title = $("#title").val().trim();
+    			var status = $("#status").val();
+    			var begin = $("#begin").val().trim();
+    			var end = $("#end").val().trim();
+    			//发送Ajax请求
+    			$.ajax({
+    				url:"http://localhost:8080/cloudnote/note/highSearch.do",
+    				type:"post",
+    				data:{"title":title,"status":status,
+    				      "begin":begin,"end":end},
+    				dataType:"json",
+    				success:function(result){
+    					if(result.status==0){
+    						var notes = result.data;
+    						//清除原有查询结果列表
+    						$("#note_list").empty();
+    						//循环生成列表
+    						for(var i=0;i<notes.length;i++){
+    							var noteId = notes[i].cn_note_id;
+    							var noteTitle = notes[i].cn_note_title;
+    							var createTime = notes[i].createTime;
+    							//拼一个tr字符串
+    							var s_tr = "<tr><td>"+noteId+"</td><td>"+noteTitle+"</td><td>"+createTime+"</td></tr>";
+    							//添加到table中
+    							$("#note_list").append(s_tr);
+    						}
+    					}
+    				}
+    			});
+    			
+    		});
+    	});
+    </script>
+
+  </head>
+  <body>
+  	标题:<input type="text" id="title">
+  	状态:<select id="status">
+  			<option value="0">全部</option>
+  			<option value="1">正常</option>
+  			<option value="2">删除</option>
+  	    </select>
+  	<br/>
+  	开始日期:<input type="text" id="begin">
+  	结束日期:<input type="text" id="end">
+  	<input type="button" value="搜索" id="searchBtn">
+  	<hr/>
+  	<table id="note_list">
+  	</table>
+  </body>
+</html>
